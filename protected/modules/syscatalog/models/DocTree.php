@@ -1,0 +1,167 @@
+<?php
+
+/**
+ * This is the model class for table "{{categories}}".
+ *
+ * The followings are the available columns in table '{{categories}}':
+ * @property integer $id
+ * @property integer $parent_id
+ * @property string $caption
+ * @property string $info
+ * @property integer $orderstate
+ * @property string $type
+ * @property string $password
+ * @property integer $af_idf
+ * @property integer $af_ido
+ */
+class DocTree extends CActiveRecord
+{
+	/**
+	 * Returns the static model of the specified AR class.
+	 * @return DocTree the static model class
+	 */
+	public static function model($className=__CLASS__)
+	{
+		return parent::model($className);
+	}
+
+	/**
+	 * @return string the associated database table name
+	 */
+	public function tableName()
+	{
+		//return '{{aicats}}';
+		return 'categories';
+	}
+
+	/**
+	 * @return array validation rules for model attributes.
+	 */
+	public function rules()
+	{
+		// NOTE: you should only define rules for those attributes that
+		// will receive user inputs.
+		return array(
+			array('parent_id, orderstate, af_idf, af_ido', 'numerical', 'integerOnly'=>true),
+			array('type', 'length', 'max'=>5),
+			array('password', 'length', 'max'=>32),
+			array('caption, info', 'safe'),
+			// The following rule is used by search().
+			// Please remove those attributes that should not be searched.
+			array('id, parent_id, caption, info, orderstate, type, password, af_idf, af_ido', 'safe', 'on'=>'search'),
+		);
+	}
+
+	/**
+	 * @return array relational rules.
+	 */
+	public function relations()
+	{
+		// NOTE: you may need to adjust the relation name and the related
+		// class name for the relations automatically generated below.
+		return array(
+		);
+	}
+
+	/**
+	 * @return array customized attribute labels (name=>label)
+	 */
+	public function attributeLabels()
+	{
+		return array(
+			'id' => 'ID',
+			'parent_id' => 'Parent',
+			'caption' => 'Caption',
+			'info' => 'Info',
+			'orderstate' => 'Orderstate',
+			'type' => 'Type',
+			'password' => 'Password',
+			'af_idf' => 'Af Idf',
+			'af_ido' => 'Af Ido',
+		);
+	}
+
+	/**
+	 * Retrieves a list of models based on the current search/filter conditions.
+	 * @return CActiveDataProvider the data provider that can return the models based on the search/filter conditions.
+	 */
+	public function search()
+	{
+		// Warning: Please modify the following code to remove attributes that
+		// should not be searched.
+
+		$criteria=new CDbCriteria;
+
+		$criteria->compare('id',$this->id);
+		$criteria->compare('parent_id',$this->parent_id);
+		$criteria->compare('caption',$this->caption,true);
+		$criteria->compare('info',$this->info,true);
+		$criteria->compare('orderstate',$this->orderstate);
+		$criteria->compare('type',$this->type,true);
+		$criteria->compare('password',$this->password,true);
+		$criteria->compare('af_idf',$this->af_idf);
+		$criteria->compare('af_ido',$this->af_ido);
+
+		return new CActiveDataProvider($this, array(
+			'criteria'=>$criteria,
+		));
+	}
+	
+	/*
+	 Получаем дерево документов в виде необходимом
+	 для компонента SDynaTree
+	*/
+	public function getDocTreeFormated()
+	{
+		//$tree = Yii::app()->cache->get('doc_tree');
+		$tree = array();
+		if (empty($tree)){
+			
+			$nodes = null;
+			$models = $this->findAll();
+			
+			if (!empty($models)){
+				foreach($models as $model){
+					$tree[$model['parent_id']][]=array(
+						'title'=>$model->caption,
+						'id'=>$model->id,
+						'key'=>$model->id,
+						'parent_id'=>$model->parent_id,
+						'isFolder'=>strcmp(trim($model->type),'dir')==0 ? true : false,
+						'expand'=>true,
+					);
+				}
+				
+				$tree = $this->buildTree($tree,0);
+				
+				Yii::app()->cache->set('doc_tree',$tree);
+			}
+			
+			unset($models);
+		}
+		
+		return $tree;
+	}
+	
+	public function buildTree(&$tree,$root)
+	{
+	    $result=array();
+	    if (isset($tree[$root]))
+	    {
+		foreach ($tree[$root] as $node)
+		{
+		    $childrens=$this->buildTree($tree,$node['id']);
+		    if ($childrens) $node['children']=$childrens;
+		    $result[]=$node;
+		}
+	    }
+	    return $result;
+	}
+        
+        public function getDbConnection ()
+        {
+            return Yii::app()->db_syscatalog;
+        }
+
+	
+}
