@@ -22,6 +22,7 @@ class UpdateAction extends StdAction
             else
             {
                 $recData = null;
+				var_dump($model->errors);
                 $ajaxMsgType = 'Ошибка доступа к серверу';
                 $ajaxMsg = 'not_saved';
                 $amount = null;

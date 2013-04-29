@@ -26,8 +26,12 @@ function access($attr, $path, $data, $volume) {
 // var_dump($_POST);
 // exit();
 
-$basePath = '/var/www/files/';
-$baseUrl = 'http://10.2.55.89/files/';
+//$basePath = '/var/www/files/';
+$basePath = dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'files'.DIRECTORY_SEPARATOR;
+
+
+$baseUrl = 'http://'.$_SERVER['HTTP_HOST'].'/files/';
+
 
 $attachFolder = $basePath;
 $attachUrl = $baseUrl;

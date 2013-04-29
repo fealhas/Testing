@@ -49,7 +49,7 @@ public function rules()
 							array('categ_id', 'numerical', 'integerOnly'=>true),
 							array('funds', 'numerical', 'integerOnly'=>true),
 							array('case', 'length', 'max'=>20),
-							array('time, lastname, first_second_name, dolzhn, komandirovan, goal, place', 'length', 'max'=>100),
+							array('time, lastname, first_second_name, dolzhn, komandirovan, goal, place', 'length', 'max'=>250),
 							array('theme', 'length', 'max'=>2048),
 							array('all_dates', 'length', 'max'=>500),
 							array('visit_date, funds', 'safe'),
