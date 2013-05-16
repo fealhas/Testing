@@ -20,7 +20,7 @@ class Search
         $c = new CDbCriteria;
         $dateCriteria = new CDbCriteria;
         $catCriteria = new CDbCriteria;
-	$visitCriteria = new CDbCriteria;
+		$visitCriteria = new CDbCriteria;
  
         $categsId = !empty($params['categ_id']) ? $params['categ_id']: null;
         $catCriteria->addInCondition('categ_id', $categsId);
@@ -48,7 +48,7 @@ class Search
 			$date_range = true;
             unset($params['date_start']);
         }
-	   if (!empty($params['datebegin']))
+		if (!empty($params['datebegin']))
         {
             if ($date_range)
                 $condition.=' AND ';
@@ -156,8 +156,9 @@ class Search
         $c->mergeWith($catCriteria, true);
 
         
-        $crit = $c->condition;
-	$c->limit = 2000;
+        $crit = $c->condition;		
+		$c->order = $foo->primaryKey();
+		$c->limit = 2000;
 		
         return new CActiveDataProvider ($foo,
                                         array('criteria'=>$c,
